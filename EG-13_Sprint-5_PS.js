@@ -155,3 +155,107 @@ function reverse(nums, left, right) {
         right--;
     }
 }
+
+/**
+ * @return {void}
+ */
+var MinStack = function() {
+    this.stack = [];
+    this.minStack = [];
+};
+
+/**
+ * @param {number} val
+ * @return {void}
+ */
+MinStack.prototype.push = function(val) {
+    this.stack.push(val);
+
+    if (
+        this.minStack.length === 0 ||
+        val <= this.minStack[this.minStack.length - 1]
+    ) {
+        this.minStack.push(val);
+    }
+};
+
+/**
+ * @return {void}
+ */
+MinStack.prototype.pop = function() {
+    let removed = this.stack.pop();
+
+    if (removed === this.minStack[this.minStack.length - 1]) {
+        this.minStack.pop();
+    }
+};
+
+/**
+ * @return {number}
+ */
+MinStack.prototype.top = function() {
+    return this.stack[this.stack.length - 1];
+};
+
+/**
+ * @return {number}
+ */
+MinStack.prototype.getMin = function() {
+    return this.minStack[this.minStack.length - 1];
+};
+
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {boolean}
+ */
+var checkSubarraySum = function(nums, k) {
+    let remainderMap = new Map();
+
+    // remainder 0 appears before the array starts
+    remainderMap.set(0, -1);
+
+    let sum = 0;
+
+    for (let i = 0; i < nums.length; i++) {
+        sum += nums[i];
+
+        let remainder = sum % k;
+
+        if (remainderMap.has(remainder)) {
+            let previousIndex = remainderMap.get(remainder);
+
+            if (i - previousIndex >= 2) {
+                return true;
+            }
+        } else {
+            remainderMap.set(remainder, i);
+        }
+    }
+
+    return false;
+};
+
+/**
+ * @param {number[]} temperatures
+ * @return {number[]}
+ */
+var dailyTemperatures = function(temperatures) {
+    let result = new Array(temperatures.length).fill(0);
+    let stack = [];
+
+    for (let i = 0; i < temperatures.length; i++) {
+        while (
+            stack.length > 0 &&
+            temperatures[i] > temperatures[stack[stack.length - 1]]
+        ) {
+            let previousIndex = stack.pop();
+
+            result[previousIndex] = i - previousIndex;
+        }
+
+        stack.push(i);
+    }
+
+    return result;
+};
